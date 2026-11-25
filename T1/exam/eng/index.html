@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="zh-MO">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <title>中五英文 1st Term 溫習與測試系統 (澳門版)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "PingFang TC", "Microsoft JhengHei", "HarmonyOS Sans TC", "Noto Sans TC", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Prevent iOS Safari / HarmonyOS auto-zoom on input focus */
+    input, select, textarea {
+      font-size: 16px !important;
+      touch-action: manipulation;
+    }
+
+    button, a, [role="button"] {
+      touch-action: manipulation;
+      min-height: 44px;
+    }
+
+    .safe-header {
+      padding-top: calc(0.75rem + var(--safe-top));
+    }
+
+    .safe-main {
+      padding-bottom: calc(5.5rem + var(--safe-bottom));
+    }
+
+    @media (min-width: 768px) {
+      .safe-main {
+        padding-bottom: 2.5rem;
+      }
+    }
+
+    .safe-bottom-nav {
+      padding-bottom: var(--safe-bottom);
+    }
+
+    /* Hide scrollbar for horizontal pill tabs */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Flashcard 3D Flip */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- TOP HEADER -->
+  <header class="bg-gradient-to-r from-blue-900 via-indigo-800 to-blue-900 text-white shadow-md sticky top-0 z-30 safe-header">
+    <div class="max-w-[1120px] mx-auto px-4 pb-3">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2.5">
+        <div>
+          <div class="text-[11px] font-semibold tracking-wider text-blue-200 uppercase">
+            Ilha Verde Middle School • 2026-2027 Form 5 English (1st Term)
+          </div>
+          <h1 class="text-lg sm:text-2xl font-bold tracking-tight">
+            中五英文綜合溫習與測試系統
+          </h1>
+        </div>
+
+        <!-- Desktop Top Mode Switcher -->
+        <div class="hidden md:flex bg-blue-950/60 p-1 rounded-xl border border-blue-400/30">
+          <button onclick="switchMainZone('study')" id="desk-btn-study" class="px-5 py-2 rounded-lg text-sm font-bold transition bg-white text-blue-900 shadow-sm">
+            📖 溫習區
+          </button>
+          <button onclick="switchMainZone('test')" id="desk-btn-test" class="px-5 py-2 rounded-lg text-sm font-bold transition text-blue-100 hover:text-white">
+            ✍️ 測試區
+          </button>
+          <button onclick="switchMainZone('mistakes')" id="desk-btn-mistakes" class="px-5 py-2 rounded-lg text-sm font-bold transition text-blue-100 hover:text-white flex items-center gap-1.5">
+            📕 錯題本 <span id="desk-mistake-count" class="px-2 py-0.5 text-xs rounded-full bg-rose-500 text-white">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Module Selector Pills (Horizontal scroll on mobile) -->
+      <div class="flex gap-2 overflow-x-auto no-scrollbar pt-3 pb-0.5">
+        <button onclick="switchModule('u4')" id="mod-btn-u4" class="shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-amber-400 text-slate-900 shadow-sm">
+          📘 Unit 4 生字與課文
+        </button>
+        <button onclick="switchModule('grammar')" id="mod-btn-grammar" class="shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-blue-800/70 text-blue-100 hover:bg-blue-700">
+          📐 文法總溫習 (A–F)
+        </button>
+        <button onclick="switchModule('writing')" id="mod-btn-writing" class="shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-blue-800/70 text-blue-100 hover:bg-blue-700">
+          📝 議論文寫作 (13句型)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 w-full max-w-[1120px] mx-auto px-3 sm:px-5 pt-4 safe-main">
+
+    <!-- ==================== ZONE 1: STUDY ZONE (溫習區) ==================== -->
+    <div id="zone-study" class="space-y-4">
+
+      <!-- MODULE 1A: UNIT 4 STUDY -->
+      <div id="study-mod-u4" class="space-y-4">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+          <button onclick="switchU4StudyTab('vocab')" id="u4-stab-vocab" class="shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-700 text-white">
+            1. 生字表 (68詞)
+          </button>
+          <button onclick="switchU4StudyTab('qa')" id="u4-stab-qa" class="shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100">
+            2. Part B 問答
+          </button>
+          <button onclick="switchU4StudyTab('sentences')" id="u4-stab-sentences" class="shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100">
+            3. Part C 造句 (14詞)
+          </button>
+          <button onclick="switchU4StudyTab('translation')" id="u4-stab-translation" class="shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100">
+            4. Part D 翻譯
+          </button>
+        </div>
+
+        <!-- U4 Study: Vocabulary -->
+        <div id="u4-scontent-vocab" class="space-y-4">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="vocab-search" oninput="renderVocabList()" placeholder="🔍 搜尋英文生字或中文解釋..." class="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600" />
+              <select id="vocab-pos-filter" onchange="renderVocabList()" class="px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <option value="all">全部詞性 (All)</option>
+                <option value="n.">名詞 (n.)</option>
+                <option value="v.">動詞 (v.)</option>
+                <option value="adj.">形容詞 (adj.)</option>
+                <option value="adv.">副詞 (adv.)</option>
+                <option value="prep.">介詞/片語 (prep./phr.)</option>
+              </select>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="toggleHideEn()" id="btn-hide-en" class="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700">
+                👁️ 隱藏英文
+              </button>
+              <button onclick="toggleHideZh()" id="btn-hide-zh" class="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700">
+                👁️ 隱藏中文
+              </button>
+              <button onclick="toggleFlashcardMode()" id="btn-fc-mode" class="px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 text-white shadow-sm">
+                🃏 單字卡翻轉模式
+              </button>
+            </div>
+          </div>
+
+          <!-- Flashcards -->
+          <div id="flashcard-box" class="hidden bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center">
+            <div class="w-full flex items-center justify-between text-xs font-bold text-slate-500 mb-3">
+              <span id="fc-counter" class="text-blue-700">第 1 / 68 張</span>
+              <div class="flex gap-2">
+                <button onclick="shuffleFlashcards()" class="px-3 py-1.5 bg-slate-100 rounded-lg text-slate-700">🔀 洗牌</button>
+                <button onclick="resetFlashcards()" class="px-3 py-1.5 bg-slate-100 rounded-lg text-slate-700">🔢 順序</button>
+              </div>
+            </div>
+
+            <div onclick="flipFlashcard()" class="w-full max-w-md h-60 cursor-pointer perspective-1000 select-none my-1">
+              <div id="fc-inner" class="relative w-full h-full transition-transform duration-500 transform-style-3d">
+                <div class="absolute inset-0 backface-hidden bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow">
+                  <span id="fc-id" class="text-xs font-bold text-blue-400 mb-1">#1</span>
+                  <div id="fc-en" class="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">gender</div>
+                  <span id="fc-pos" class="px-2.5 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-bold">n.</span>
+                  <button onclick="event.stopPropagation(); speakCurrentCard()" class="mt-4 px-4 py-2 bg-blue-700 text-white rounded-full text-xs font-bold shadow">
+                    🔊 朗讀發音
+                  </button>
+                  <span class="text-[11px] text-slate-400 mt-3">點擊卡片翻看中文（桌面可用方向鍵切換）</span>
+                </div>
+                <div class="absolute inset-0 backface-hidden rotate-y-180 bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow">
+                  <div id="fc-zh" class="text-3xl font-bold text-emerald-900">性別</div>
+                  <span class="text-[11px] text-slate-400 mt-4">點擊翻回正面</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 mt-4">
+              <button onclick="prevFlashcard()" class="px-4 py-2.5 bg-slate-200 text-slate-800 rounded-xl text-sm font-bold">⬅️ 上一張</button>
+              <button onclick="flipFlashcard()" class="px-4 py-2.5 bg-blue-100 text-blue-800 rounded-xl text-sm font-bold">🔄 翻面</button>
+              <button onclick="nextFlashcard()" class="px-4 py-2.5 bg-blue-700 text-white rounded-xl text-sm font-bold">下一張 ➡️</button>
+            </div>
+          </div>
+
+          <!-- Vocab Grid -->
+          <div id="vocab-list-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+        </div>
+
+        <!-- U4 Study: Part B Q&A -->
+        <div id="u4-scontent-qa" class="hidden space-y-3"></div>
+
+        <!-- U4 Study: Part C Sentences -->
+        <div id="u4-scontent-sentences" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+
+        <!-- U4 Study: Part D Translation -->
+        <div id="u4-scontent-translation" class="hidden space-y-3"></div>
+      </div>
+
+      <!-- MODULE 1B: GRAMMAR STUDY (SECTION A - F) -->
+      <div id="study-mod-grammar" class="hidden space-y-4">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+          <button onclick="switchGrammarStudyTab('A')" id="g-stab-A" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-700 text-white">Sec A: 冠詞</button>
+          <button onclick="switchGrammarStudyTab('B')" id="g-stab-B" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec B: 介詞</button>
+          <button onclick="switchGrammarStudyTab('C')" id="g-stab-C" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec C: 改錯</button>
+          <button onclick="switchGrammarStudyTab('D')" id="g-stab-D" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec D: 動詞時態</button>
+          <button onclick="switchGrammarStudyTab('E')" id="g-stab-E" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec E: 主謂一致</button>
+          <button onclick="switchGrammarStudyTab('F')" id="g-stab-F" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec F: 單選 (17題)</button>
+        </div>
+        <div id="grammar-study-container" class="space-y-3"></div>
+      </div>
+
+      <!-- MODULE 1C: SHORT WRITING STUDY -->
+      <div id="study-mod-writing" class="hidden space-y-4">
+        <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+          <button onclick="switchWritingStudyTab('patterns')" id="w-stab-patterns" class="flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white">
+            1. 13 個必背萬用句型
+          </button>
+          <button onclick="switchWritingStudyTab('essay')" id="w-stab-essay" class="flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100">
+            2. 四段滿分範文對照
+          </button>
+        </div>
+        <div id="writing-study-container" class="space-y-3"></div>
+      </div>
+
+    </div>
+
+    <!-- ==================== ZONE 2: TEST ZONE (測試區) ==================== -->
+    <div id="zone-test" class="hidden space-y-4">
+
+      <!-- MODULE 2A: UNIT 4 TEST -->
+      <div id="test-mod-u4" class="space-y-4">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+          <button onclick="switchU4TestTab('partA')" id="u4-ttab-partA" class="shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 text-white">
+            Part A: 生字默寫
+          </button>
+          <button onclick="switchU4TestTab('partB')" id="u4-ttab-partB" class="shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100">
+            Part B: 問答自測
+          </button>
+          <button onclick="switchU4TestTab('partC')" id="u4-ttab-partC" class="shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100">
+            Part C: 14詞造句
+          </button>
+          <button onclick="switchU4TestTab('partD')" id="u4-ttab-partD" class="shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100">
+            Part D: 句子翻譯
+          </button>
+        </div>
+
+        <!-- Part A Dictation -->
+        <div id="u4-tcontent-partA" class="space-y-4">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-900">Part A. 生字默寫測驗</h2>
+                <p class="text-xs text-slate-500">完全對應考卷第 1–68 題順序，支持 Enter 跳至下一題。</p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="initPartATest('worksheet')" id="btn-pa-worksheet" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-600 text-white">📋 考卷原順序 (68題)</button>
+                <button onclick="initPartATest('random20')" id="btn-pa-random20" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700">🎲 隨機抽測 20 題</button>
+              </div>
+            </div>
+            <div id="partA-result-box" class="hidden p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-between">
+              <div>
+                <div class="text-xs font-bold text-indigo-700">本次默寫得分</div>
+                <div id="partA-score-display" class="text-2xl font-extrabold text-indigo-900">0 / 68 (0%)</div>
+              </div>
+              <button onclick="initPartATest(currentPartAMode)" class="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-xl">清空重測</button>
+            </div>
+          </div>
+
+          <div id="partA-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+          <div class="flex justify-center pt-2">
+            <button onclick="gradePartA()" class="w-full sm:w-auto px-8 py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl shadow-lg text-base">
+              ✅ 提交並批改 Part A
+            </button>
+          </div>
+        </div>
+
+        <!-- Part B Test -->
+        <div id="u4-tcontent-partB" class="hidden space-y-4">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-slate-900">Part B. 閱讀問答自測</h2>
+              <p class="text-xs text-slate-500">可切換關鍵字填充或完整句子默寫。</p>
+            </div>
+            <div class="flex bg-slate-100 p-1 rounded-xl">
+              <button onclick="setPartBMode('cloze')" id="btn-pb-cloze" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-800 shadow-sm">🧩 關鍵字填充</button>
+              <button onclick="setPartBMode('full')" id="btn-pb-full" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600">✍️ 完整默寫</button>
+            </div>
+          </div>
+          <div id="partB-test-container" class="space-y-3"></div>
+        </div>
+
+        <!-- Part C Test -->
+        <div id="u4-tcontent-partC" class="hidden space-y-4">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-base font-bold text-slate-900">Part C. 14 詞造句實戰練習</h2>
+            <p class="text-xs text-slate-500">輸入英文造句，即時統計單詞數（目標 14 詞）並檢查目標字詞。</p>
+          </div>
+          <div id="partC-test-container" class="space-y-3"></div>
+        </div>
+
+        <!-- Part D Test -->
+        <div id="u4-tcontent-partD" class="hidden space-y-4">
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <h2 class="text-base font-bold text-slate-900">Part D. 中英互譯測驗</h2>
+            <p class="text-xs text-slate-500">完成翻譯後點擊核對關鍵詞與標準譯文。</p>
+          </div>
+          <div id="partD-test-container" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <!-- MODULE 2B: GRAMMAR TEST -->
+      <div id="test-mod-grammar" class="hidden space-y-4">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+          <button onclick="switchGrammarTestTab('A')" id="g-ttab-A" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-700 text-white">Sec A: 冠詞</button>
+          <button onclick="switchGrammarTestTab('B')" id="g-ttab-B" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec B: 介詞</button>
+          <button onclick="switchGrammarTestTab('C')" id="g-ttab-C" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec C: 改錯</button>
+          <button onclick="switchGrammarTestTab('D')" id="g-ttab-D" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec D: 動詞時態</button>
+          <button onclick="switchGrammarTestTab('E')" id="g-ttab-E" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec E: 主謂一致</button>
+          <button onclick="switchGrammarTestTab('F')" id="g-ttab-F" class="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Sec F: 單選</button>
+        </div>
+        <div id="grammar-test-container" class="space-y-4"></div>
+      </div>
+
+      <!-- MODULE 2C: SHORT WRITING TEST -->
+      <div id="test-mod-writing" class="hidden space-y-4">
+        <div class="flex gap-2 bg-white p-2 rounded-2xl shadow-sm border border-slate-200">
+          <button onclick="switchWritingTestTab('cloze')" id="w-ttab-cloze" class="flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white">
+            1. 13 個必背句型默寫
+          </button>
+          <button onclick="switchWritingTestTab('simulator')" id="w-ttab-simulator" class="flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100">
+            2. 四段寫作實戰模擬器
+          </button>
+        </div>
+        <div id="writing-test-container" class="space-y-4"></div>
+      </div>
+
+    </div>
+
+    <!-- ==================== ZONE 3: MISTAKE NOTEBOOK (錯題本) ==================== -->
+    <div id="zone-mistakes" class="hidden space-y-4">
+      <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">📕 我的專屬錯題本 (LocalStorage 自動保存)</h2>
+          <p class="text-xs text-slate-500">你在測試區答錯的生字與文法題會自動收錄於此，重測答對後自動移除。</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="startMistakeVocabTest()" class="px-4 py-2 bg-rose-600 text-white text-xs font-bold rounded-xl shadow-sm">
+            🎯 重測錯題生字
+          </button>
+          <button onclick="clearAllMistakes()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-xl">
+            清空紀錄
+          </button>
+        </div>
+      </div>
+
+      <div id="mistakes-list-container" class="space-y-4"></div>
+    </div>
+
+  </main>
+
+  <!-- MOBILE FIXED BOTTOM NAVIGATION (< 768px) -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] z-40 safe-bottom-nav">
+    <div class="grid grid-cols-3 h-14">
+      <button onclick="switchMainZone('study')" id="mob-btn-study" class="flex flex-col items-center justify-center text-blue-700 font-bold text-xs">
+        <span class="text-lg leading-none mb-0.5">📖</span>
+        <span>溫習區</span>
+      </button>
+      <button onclick="switchMainZone('test')" id="mob-btn-test" class="flex flex-col items-center justify-center text-slate-500 font-medium text-xs">
+        <span class="text-lg leading-none mb-0.5">✍️</span>
+        <span>測試區</span>
+      </button>
+      <button onclick="switchMainZone('mistakes')" id="mob-btn-mistakes" class="relative flex flex-col items-center justify-center text-slate-500 font-medium text-xs">
+        <span class="text-lg leading-none mb-0.5">📕</span>
+        <span>錯題本</span>
+        <span id="mob-mistake-badge" class="absolute top-1.5 right-6 px-1.5 py-0.2 bg-rose-600 text-white text-[10px] font-bold rounded-full">0</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- TOAST MESSAGE -->
+  <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-slate-900/95 text-white px-4 py-2.5 rounded-full text-xs sm:text-sm font-medium shadow-xl opacity-0 pointer-events-none transition-opacity duration-300 z-50 whitespace-nowrap">
+    提示
+  </div>
+
+  <script>
+    // ==================== 1. UNIT 4 DATA (68 STANDARD WORDS) ====================
+    const vocabList = [
+      { id: 1, word: "gender", pos: "n.", zh: "性別" },
+      { id: 2, word: "behavior", alt: ["behaviour"], pos: "n.", zh: "行為" },
+      { id: 3, word: "various", pos: "adj.", zh: "各式各樣的" },
+      { id: 4, word: "express", pos: "v.", zh: "表達" },
+      { id: 5, word: "differ", pos: "v.", zh: "不同" },
+      { id: 6, word: "throughout", pos: "prep.", zh: "在整個…期間" },
+      { id: 7, word: "across", pos: "prep.", zh: "橫跨" },
+      { id: 8, word: "despite", pos: "prep.", zh: "儘管" },
+      { id: 9, word: "employment", pos: "n.", zh: "就業" },
+      { id: 10, word: "assertive", pos: "adj.", zh: "有主見的；果斷的" },
+      { id: 11, word: "similarity", pos: "n.", zh: "相似性" },
+      { id: 12, word: "historically", pos: "adv.", zh: "歷史上" },
+      { id: 13, word: "position", pos: "n.", zh: "地位；職位" },
+      { id: 14, word: "frequently", pos: "adv.", zh: "頻繁地" },
+      { id: 15, word: "value", pos: "n./v.", zh: "價值 / 重視" },
+      { id: 16, word: "examine", pos: "v.", zh: "審查" },
+      { id: 17, word: "ancient", pos: "adj.", zh: "古代的" },
+      { id: 18, word: "proverb", pos: "n.", zh: "諺語" },
+      { id: 19, word: "consider", pos: "v.", zh: "考慮" },
+      { id: 20, word: "society", pos: "n.", zh: "社會" },
+      { id: 21, word: "century", pos: "n.", zh: "世紀" },
+      { id: 22, word: "talkative", pos: "adj.", zh: "健談的；多話的" },
+      { id: 23, word: "weapon", pos: "n.", zh: "武器" },
+      { id: 24, word: "rust", pos: "n./v.", zh: "鏽 / 生鏽" },
+      { id: 25, word: "hen", pos: "n.", zh: "母雞" },
+      { id: 26, word: "rooster", pos: "n.", zh: "公雞" },
+      { id: 27, word: "politics", pos: "n.", zh: "政治" },
+      { id: 28, word: "political", pos: "adj.", zh: "政治的" },
+      { id: 29, word: "economic", pos: "adj.", zh: "經濟的" },
+      { id: 30, word: "excessive", pos: "adj.", zh: "過度的" },
+      { id: 31, word: "prime minister", pos: "n. phr.", zh: "首相 / 總理" },
+      { id: 32, word: "president", pos: "n.", zh: "總統" },
+      { id: 33, word: "complain", pos: "v.", zh: "抱怨" },
+      { id: 34, word: "power", pos: "n.", zh: "權力" },
+      { id: 35, word: "sexist", pos: "n.", zh: "性別歧視者" },
+      { id: 36, word: "sexism", pos: "n.", zh: "性別歧視" },
+      { id: 37, word: "treatment", pos: "n.", zh: "對待" },
+      { id: 38, word: "inferior", pos: "adj.", zh: "較差的" },
+      { id: 39, word: "decade", pos: "n.", zh: "十年" },
+      { id: 40, word: "aware", pos: "adj.", zh: "察覺到的" },
+      { id: 41, word: "politely", pos: "adv.", zh: "有禮貌地" },
+      { id: 42, word: "directly", pos: "adv.", zh: "直接地" },
+      { id: 43, word: "for instance", pos: "prep. phr.", zh: "例如" },
+      { id: 44, word: "identify", pos: "v.", zh: "識別" },
+      { id: 45, word: "rapport", pos: "n.", zh: "融洽關係" },
+      { id: 46, word: "weakness", pos: "n.", zh: "弱點" },
+      { id: 47, word: "freely", pos: "adv.", zh: "自由地" },
+      { id: 48, word: "in contrast", pos: "prep. phr.", zh: "相比之下；相反地" },
+      { id: 49, word: "myth", pos: "n.", zh: "神話；迷思" },
+      { id: 50, word: "scholar", pos: "n.", zh: "學者" },
+      { id: 51, word: "admit", pos: "v.", zh: "承認" },
+      { id: 52, word: "linguist", pos: "n.", zh: "語言學家" },
+      { id: 53, word: "opportunity", pos: "n.", zh: "機會" },
+      { id: 54, word: "category", pos: "n.", zh: "類別" },
+      { id: 55, word: "scandal", pos: "n.", zh: "醜聞" },
+      { id: 56, word: "role", pos: "n.", zh: "角色" },
+      { id: 57, word: "criticize", alt: ["criticise"], pos: "v.", zh: "批評" },
+      { id: 58, word: "gossip", pos: "n./v.", zh: "八卦 / 說閒話" },
+      { id: 59, word: "private", pos: "adj.", zh: "私人的" },
+      { id: 60, word: "influence", pos: "v.", zh: "影響" },
+      { id: 61, word: "barrier", pos: "n.", zh: "障礙" },
+      { id: 62, word: "dominate", pos: "v.", zh: "主導" },
+      { id: 63, word: "psychologist", pos: "n.", zh: "心理學家" },
+      { id: 64, word: "profanity", pos: "n.", zh: "髒話" },
+      { id: 65, word: "equality", pos: "n.", zh: "平等" },
+      { id: 66, word: "entirely", pos: "adv.", zh: "完全地" },
+      { id: 67, word: "military", pos: "n.", zh: "軍隊" },
+      { id: 68, word: "originally", pos: "adv.", zh: "最初；原本" }
+    ];
+
+    // Exact Exam Worksheet Order (1 to 68)
+    const examWorksheetOrder = [
+      { examNo: 1, zh: "頻繁地", vocabId: 14 },
+      { examNo: 2, zh: "融洽關係", vocabId: 45 },
+      { examNo: 3, zh: "十年", vocabId: 39 },
+      { examNo: 4, zh: "心理學家", vocabId: 63 },
+      { examNo: 5, zh: "過度的", vocabId: 30 },
+      { examNo: 6, zh: "平等", vocabId: 65 },
+      { examNo: 7, zh: "弱點", vocabId: 46 },
+      { examNo: 8, zh: "識別", vocabId: 44 },
+      { examNo: 9, zh: "類別", vocabId: 54 },
+      { examNo: 10, zh: "健談的", vocabId: 22 },
+      { examNo: 11, zh: "髒話", vocabId: 64 },
+      { examNo: 12, zh: "性別歧視", vocabId: 36 },
+      { examNo: 13, zh: "語言學家", vocabId: 52 },
+      { examNo: 14, zh: "私人的", vocabId: 59 },
+      { examNo: 15, zh: "地位；職位", vocabId: 13 },
+      { examNo: 16, zh: "有主見的", vocabId: 10 },
+      { examNo: 17, zh: "古代的", vocabId: 17 },
+      { examNo: 18, zh: "批評", vocabId: 57 },
+      { examNo: 19, zh: "橫跨", vocabId: 7 },
+      { examNo: 20, zh: "自由地", vocabId: 47 },
+      { examNo: 21, zh: "價值；重視", vocabId: 15 },
+      { examNo: 22, zh: "相反", vocabId: 48 },
+      { examNo: 23, zh: "性別歧視者", vocabId: 35 },
+      { examNo: 24, zh: "政治", vocabId: 27 },
+      { examNo: 25, zh: "性別", vocabId: 1 },
+      { examNo: 26, zh: "相似性", vocabId: 11 },
+      { examNo: 27, zh: "主導", vocabId: 62 },
+      { examNo: 28, zh: "影響", vocabId: 60 },
+      { examNo: 29, zh: "母雞", vocabId: 25 },
+      { examNo: 30, zh: "就業", vocabId: 9 },
+      { examNo: 31, zh: "武器", vocabId: 23 },
+      { examNo: 32, zh: "抱怨", vocabId: 33 },
+      { examNo: 33, zh: "生鏽", vocabId: 24 },
+      { examNo: 34, zh: "較差的", vocabId: 38 },
+      { examNo: 35, zh: "世紀", vocabId: 21 },
+      { examNo: 36, zh: "政治的", vocabId: 28 },
+      { examNo: 37, zh: "諺語", vocabId: 18 },
+      { examNo: 38, zh: "在…期間", vocabId: 6 },
+      { examNo: 39, zh: "障礙", vocabId: 61 },
+      { examNo: 40, zh: "審查", vocabId: 16 },
+      { examNo: 41, zh: "對待", vocabId: 37 },
+      { examNo: 42, zh: "直接地", vocabId: 42 },
+      { examNo: 43, zh: "考慮", vocabId: 19 },
+      { examNo: 44, zh: "承認", vocabId: 51 },
+      { examNo: 45, zh: "最初；原本", vocabId: 68 },
+      { examNo: 46, zh: "各式各樣", vocabId: 3 },
+      { examNo: 47, zh: "學者", vocabId: 50 },
+      { examNo: 48, zh: "角色", vocabId: 56 },
+      { examNo: 49, zh: "機會", vocabId: 53 },
+      { examNo: 50, zh: "軍隊", vocabId: 67 },
+      { examNo: 51, zh: "醜聞", vocabId: 55 },
+      { examNo: 52, zh: "表達", vocabId: 4 },
+      { examNo: 53, zh: "完全地", vocabId: 66 },
+      { examNo: 54, zh: "經濟的", vocabId: 29 },
+      { examNo: 55, zh: "察覺到的", vocabId: 40 },
+      { examNo: 56, zh: "社會", vocabId: 20 },
+      { examNo: 57, zh: "儘管", vocabId: 8 },
+      { examNo: 58, zh: "神話", vocabId: 49 },
+      { examNo: 59, zh: "首相", vocabId: 31 },
+      { examNo: 60, zh: "例如", vocabId: 43 },
+      { examNo: 61, zh: "歷史上", vocabId: 12 },
+      { examNo: 62, zh: "公雞", vocabId: 26 },
+      { examNo: 63, zh: "權力", vocabId: 34 },
+      { examNo: 64, zh: "不同", vocabId: 5 },
+      { examNo: 65, zh: "總統", vocabId: 32 },
+      { examNo: 66, zh: "八卦；閒話", vocabId: 58 },
+      { examNo: 67, zh: "有禮貌地", vocabId: 41 },
+      { examNo: 68, zh: "行為", vocabId: 2 }
+    ];
+
+    // Unit 4 Part B Q&A
+    const qaList = [
+      {
+        id: 1,
+        q: "According to Tannen, how do men and women usually deal with problems differently?",
+        qZh: "根據 Tannen 的說法，男性和女性通常如何以不同方式處理問題？",
+        a: "Women tend to ask others for help, while men prefer to solve problems by themselves.",
+        aZh: "女性傾向於向他人尋求幫助，而男性則更喜歡自己解決問題。",
+        keywords: ["ask others for help", "solve problems by themselves"],
+        cloze: "Women tend to [ask others for help], while men prefer to [solve problems by themselves]."
+      },
+      {
+        id: 2,
+        q: "According to Coates, what are two types of women's speech?",
+        qZh: "根據 Coates 的說法，女性言語有哪兩種類型？",
+        a: "They are house talk and scholar talk.",
+        aZh: "它們是家庭閒談（house talk）和學術討論（scholar talk）。",
+        keywords: ["house talk", "scholar talk"],
+        cloze: "They are [house talk] and [scholar talk]."
+      },
+      {
+        id: 3,
+        q: "According to Cameron, what causes differences in the way men and women speak?",
+        qZh: "根據 Cameron 的說法，是什麼導致男性和女性說話方式的差異？",
+        a: "The differences in power between men and women in society cause these differences.",
+        aZh: "社會上男性與女性之間的權力差異導致了這些不同。",
+        keywords: ["differences in power", "society"],
+        cloze: "The [differences in power] between men and women in [society] cause these differences."
+      },
+      {
+        id: 4,
+        q: "According to Cameron, what is the belief that women talk too much based on?",
+        qZh: "根據 Cameron 的說法，「女性說話太多」這種觀念是基於什麼？",
+        a: "It is based on the sexist thinking that women are less important than men.",
+        aZh: "它是基於「女性不如男性重要」的性別歧視思想。",
+        keywords: ["sexist thinking", "less important than men"],
+        cloze: "It is based on the [sexist thinking] that women are [less important than men]."
+      }
+    ];
+
+    // Unit 4 Part C Sentences (Exact 14 words each)
+    const sentencePrompts = [
+      {
+        id: 1,
+        prompt: "behavior",
+        pos: "n. 行為",
+        example: "Good behavior in class helps every student learn new English words much faster today.",
+        exampleZh: "課堂上的良好行為幫助每位學生今天更快地學習新英文單字。（14詞）",
+        regex: /\bbehaviou?r\b/i
+      },
+      {
+        id: 2,
+        prompt: "assertive",
+        pos: "adj. 有主見的；果斷的",
+        example: "An assertive speaker can share her ideas clearly with everyone in the big room.",
+        exampleZh: "一位有主見的演講者能向大房間裡的每個人清晰地分享她的想法。（14詞）",
+        regex: /\bassertive\b/i
+      },
+      {
+        id: 3,
+        prompt: "despite the fact that",
+        pos: "conj. phr. 儘管…",
+        example: "He passed the hard English exam despite the fact that he was very sick.",
+        exampleZh: "儘管他病得很重，他還是通過了艱難的英文考試。（14詞）",
+        regex: /\bdespite the fact that\b/i
+      },
+      {
+        id: 4,
+        prompt: "consider",
+        pos: "v. 考慮",
+        example: "We should always consider other people's feelings before we speak loudly in the classroom.",
+        exampleZh: "在課室裡大聲說話之前，我們應該時刻考慮別人的感受。（14詞）",
+        regex: /\bconsider(s|ed|ing)?\b/i
+      },
+      {
+        id: 5,
+        prompt: "directly",
+        pos: "adv. 直接地",
+        example: "Please tell me the truth directly so that I can help you right now.",
+        exampleZh: "請直接告訴我真相，這樣我現在就能幫到你。（14詞）",
+        regex: /\bdirectly\b/i
+      },
+      {
+        id: 6,
+        prompt: "It is + adj. + that...",
+        pos: "句型：…是（形容詞）的",
+        example: "It is important that all students treat both men and women equally at school.",
+        exampleZh: "所有學生在學校裡平等對待男性和女性是很重要的。（14詞）",
+        regex: /\bit\s+(is|was)\s+[a-z]+\s+that\b/i
+      }
+    ];
+
+    // Unit 4 Part D Translations
+    const translationItems = [
+      {
+        id: 1,
+        dir: "en2zh",
+        source: "Stereotypes still exist today in many cultures despite the fact that women's place in society has greatly improved in recent years.",
+        target: "儘管近年來女性在社會上的地位已大為提升，但刻板印象至今仍存在於許多文化之中。",
+        keywords: ["刻板印象", "儘管", "地位", "提升"]
+      },
+      {
+        id: 2,
+        dir: "en2zh",
+        source: "Men and women have more similarities than differences in how they use language.",
+        target: "男性和女性在語言使用方面的相似之處多於不同之處。",
+        keywords: ["相似", "不同", "語言"]
+      },
+      {
+        id: 3,
+        dir: "zh2en",
+        source: "歷史上，人們認為女性不如男性。",
+        target: "Historically, women were considered inferior to men.",
+        alt: "Historically, people thought that women were inferior to men.",
+        keywords: ["historically", "women", "inferior", "men"]
+      },
+      {
+        id: 4,
+        dir: "en2zh",
+        source: "As women gain more power through education and employment, they may use language in more confident ways.",
+        target: "隨著女性透過教育和就業獲得更多權力，她們可能會以更自信的方式使用語言。",
+        keywords: ["教育", "就業", "權力", "自信"]
+      },
+      {
+        id: 5,
+        dir: "en2zh",
+        source: "The negative opinion that women are more talkative than men is based on the sexist thinking in the past.",
+        target: "認為女性比男性更愛說話的負面觀點，是基於過去性別歧視的思想。",
+        keywords: ["負面", "健談", "愛說話", "性別歧視"]
+      },
+      {
+        id: 6,
+        dir: "zh2en",
+        source: "許多人不同意女性不如男性強大這個觀點。",
+        target: "Many people disagree with the view that women are less powerful than men.",
+        alt: "Many people disagree with the opinion that women are less powerful than men.",
+        keywords: ["disagree", "women", "powerful", "men"]
+      }
+    ];
+
+    // ==================== 2. GRAMMAR DATA (SECTION A - F) ====================
+    const grammarData = {
+      A: [
+        { id: "A1", text: "1. My brother is ___ honest boy, but he has ___ unusual habit of talking to himself.", blanks: ["an", "an"], options: ["a", "an", "the", "X"], note: "honest 雖以 h 開頭但發元音 /ɒ/，故用 an；unusual 發元音 /ʌ/ 用 an。" },
+        { id: "A2", text: "2. ___ harder you practise, ___ more confident you will become on stage.", blanks: ["The", "the"], options: ["a", "an", "the", "X"], note: "比較級雙重句型：The + 比較級..., the + 比較級...（越…就越…）。" },
+        { id: "A3", text: "3. Last summer, we travelled to ___ Philippines and visited many ___ famous tourist attractions.", blanks: ["the", "X"], options: ["a", "an", "the", "X"], note: "群島國家名稱（the Philippines）前加 the；複數泛指景點不加冠詞（X）。" },
+        { id: "A4", text: "4. Before ___ breakfast, Lily spent ___ hour reviewing her notes for the test.", blanks: ["X", "an"], options: ["a", "an", "the", "X"], note: "三餐（breakfast）前通常不加冠詞（X）；hour 靜音 h 發元音，用 an。" },
+        { id: "A5", text: "5. She wants to be ___ artist one day, even though she finds ___ drawing quite difficult at first.", blanks: ["an", "X"], options: ["a", "an", "the", "X"], note: "artist 元音開頭用 an；drawing 為不可數抽象活動名稱，用 X。" },
+        { id: "A6", text: "6. Kevin finds ___ English challenging, he hopes to become ___ English teacher in the future. ___ English teacher who inspired him was Mr. Wong.", blanks: ["X", "an", "The"], options: ["a", "an", "the", "X"], note: "學科名稱 English 前用 X；泛指一位英文老師用 an；後有定語從句特指 Mr. Wong 用 The。" }
+      ],
+      B: [
+        { id: "B1", text: "1. The first moon landing took place ___ 1969, and the astronauts left footprints ___ the moon.", blanks: ["in", "on"], options: ["in", "on", "at"], note: "年份前用 in (in 1969)；月球表面用 on (on the moon)。" },
+        { id: "B2", text: "2. His awards are displayed ___ a glass cabinet ___ the living room.", blanks: ["in", "in"], options: ["in", "on", "at"], note: "在櫃子內部與房間內部均用 in。" },
+        { id: "B3", text: "3. The train to London leaves ___ 9:15 ___ Monday morning, so please be ___ the platform early.", blanks: ["at", "on", "on"], options: ["in", "on", "at"], note: "具體鐘點用 at；具體某天上午用 on；在月台上用 on the platform。" },
+        { id: "B4", text: "4. She started her new job ___ 1st September, and she works ___ an office ___ the city centre.", blanks: ["on", "in", "in"], altBlanks: { 1: ["in", "at"] }, options: ["in", "on", "at"], note: "具體日期（1st September）用 on；在辦公室用 in/at；在市中心用 in。" },
+        { id: "B5", text: "5. The children were sitting ___ the floor, listening to a story ___ bedtime.", blanks: ["on", "at"], options: ["in", "on", "at"], note: "在地板表面用 on；固定搭配 at bedtime（就寢時間）。" },
+        { id: "B6", text: "6. The computer laboratory is located ___ the third floor, while the gym is ___ the main building.", blanks: ["on", "in"], options: ["in", "on", "at"], note: "樓層前用 on (on the third floor)；建築物內部用 in。" },
+        { id: "B7", text: "7. She started her new job ___ 1st September, and she works ___ an office.", blanks: ["on", "in"], altBlanks: { 1: ["in", "at"] }, options: ["in", "on", "at"], note: "具體日期前用 on；工作場所 an office 用 in 或 at。" },
+        { id: "B8", text: "8. The oldest university ___ Europe was founded ___ the 12th century.", blanks: ["in", "in"], options: ["in", "on", "at"], note: "大洲名稱（Europe）與世紀（the 12th century）前均用 in。" },
+        { id: "B9", text: "9. Her paintings were shown ___ an exhibition ___ Paris last summer.", blanks: ["at", "in"], options: ["in", "on", "at"], note: "在展覽會上用 at an exhibition；大城市（Paris）前用 in。" },
+        { id: "B10", text: "10. His awards are displayed ___ a glass cabinet ___ the living room.", blanks: ["in", "in"], options: ["in", "on", "at"], note: "在玻璃櫃裡及客廳裡均用介詞 in。" }
+      ],
+      C: [
+        { id: "C1", text: "1. My sister is [an] university student who is studying medicine in London.", answer: "a", note: "university 雖以 u 開頭，但發半元音 /j/，故用 a。" },
+        { id: "C2", text: "2. Many teenagers are [worried about] learning new skills through online courses.", answer: "✓", note: "be worried about + V-ing 結構完全正確，填 ✓。" },
+        { id: "C3", text: "3. Students [must use] their mobile phones during tests at school.", answer: "must not use", note: "語意邏輯：測驗期間嚴禁使用手提電話，應改為 must not use (mustn't use)。" },
+        { id: "C4", text: "4. My brother [should to sleep] before 10 o'clock every night.", answer: "should sleep", note: "情態動詞 should 後必須接原形動詞，不可加 to。" },
+        { id: "C5", text: "5. The teachers [is] working hard at IV Middle School.", answer: "are", note: "主語 The teachers 為複數，be 動詞應改為 are。" },
+        { id: "C6", text: "6. You should hand in your English homework [by] advance.", answer: "in", note: "固定介詞片語：in advance（提前）。" },
+        { id: "C7", text: "7. I am very interested [for] watching BLACKPINK in Seoul.", answer: "in", note: "固定搭配：be interested in（對…感興趣）。" },
+        { id: "C8", text: "8. Tom's father gave him [some advices] on how to be a professional car racer.", answer: "some advice", note: "advice 為不可數名詞，沒有複數形式 advices。" }
+      ],
+      D: {
+        title: "Section D. Fill in the blanks with the correct forms of verbs.",
+        passage: [
+          "Right now, Alice (1) ___ (volunteer) at an animal shelter that rescues stray cats and dogs. ",
+          "She (2) ___ (love) animals ever since she was a little girl. ",
+          "At the moment, she (3) ___ (help) the staff feed the animals and clean their cages every weekend. ",
+          "Before she started volunteering, she (4) ___ (never/look) after any pets on her own. ",
+          "Up to now, the shelter (5) ___ (rescue) more than 300 animals from the streets. ",
+          "Tomorrow afternoon, Alice (6) ___ (organize) a charity event at her school to raise money for the shelter. ",
+          "She is confident that more students (7) ___ (volunteer) at animal shelters in the years to come. ",
+          "By the time she leaves school, the shelter (8) ___ (find) new homes for at least fifty cats and dogs."
+        ],
+        answers: ["is volunteering", "has loved", "is helping", "had never looked", "has rescued", "will organize", "will volunteer", "will have found"],
+        notes: [
+          "(1) Right now 提示現在進行式：is volunteering",
+          "(2) ever since 提示現在完成式：has loved",
+          "(3) At the moment 提示現在進行式：is helping",
+          "(4) Before she started (過去的過去) 提示過去完成式：had never looked",
+          "(5) Up to now (至今為止) 提示現在完成式：has rescued",
+          "(6) Tomorrow afternoon 提示一般將來式：will organize",
+          "(7) in the years to come 提示一般將來式：will volunteer",
+          "(8) By the time she leaves school (到將來某時間點已完成) 提示將來完成式：will have found"
+        ]
+      },
+      E: {
+        title: "Section E. Complete the passage with the correct form of the verbs (Simple Present Tense).",
+        passage: [
+          "Volunteering (1) ___ (play) an important role in students' growth. ",
+          "Every semester, a number of students (2) ___ (volunteer) at community centres. ",
+          "Both the Reading Club and the Science Club (3) ___ (offer) service opportunities. ",
+          "The coordinator, together with several volunteers, (4) ___ (plan) activities all year. ",
+          "Not only the students but also their teachers (5) ___ (support) volunteering. ",
+          "However, each of the volunteers (6) ___ (need) to manage their time well. ",
+          "The number of student volunteers (7) ___ (grow) every year. ",
+          "Either the president or the teachers (8) ___ (be) responsible for the schedule."
+        ],
+        answers: ["plays", "volunteer", "offer", "plans", "support", "needs", "grows", "are"],
+        notes: [
+          "(1) 動名詞 Volunteering 作主語視為單數：plays",
+          "(2) a number of + 複數名詞（許多…）視為複數：volunteer",
+          "(3) Both... and... 連接兩個主語視為複數：offer",
+          "(4) together with 連接時遵循「就遠原則」，看主語 The coordinator（單數）：plans",
+          "(5) Not only... but also... 遵循「就近原則」，看 teachers（複數）：support",
+          "(6) each of + 複數名詞作主語，謂語用單數：needs",
+          "(7) The number of...（…的數量）作主語視為單數：grows",
+          "(8) Either... or... 遵循「就近原則」，看 teachers（複數）：are"
+        ]
+      },
+      F: [
+        { id: 1, q: "1. Is this your smartphone, Mike? — No, it's not ___ smartphone; ___ is here.", opts: ["A. my; my", "B. mine; mine", "C. my; mine", "D. mine; my"], ans: 2, note: "正確為 C (my; mine)。第一個空後有名詞 smartphone，用形容詞性物主代詞 my；第二個空後無名詞，用名詞性物主代詞 mine。" },
+        { id: 2, q: "2. The cake is burnt. I ___ it for so long.", opts: ["A. shouldn't have baked", "B. wouldn't have baked", "C. won't bake", "D. mustn't bake"], ans: 0, note: "正確為 A。shouldn't have + p.p. 表示「過去本不應該做某事（但卻做了）」。" },
+        { id: 3, q: "3. The man ___ car was stolen last night is talking to the police now.", opts: ["A. who", "B. what", "C. which", "D. whose"], ans: 3, note: "正確為 D。whose 在定語從句中作定語，表示「那位車被偷的男士」。" },
+        { id: 4, q: "4. ___ I hand in my homework by tomorrow? — No, you ___. You can hand it in on Friday.", opts: ["A. Will; needn't", "B. Must; don't have to", "C. May; can't", "D. Shall; haven't"], ans: 1, note: "正確為 B。Must 開頭的一般疑問句，否定回答用 No, you don't have to / needn't（不必）。" },
+        { id: 5, q: "5. ___ I use your phone for a minute? — Sure, go ahead.", opts: ["A. Must", "B. May", "C. Should", "D. Need"], ans: 1, note: "正確為 B。May I...? 用於禮貌地請求許可。" },
+        { id: 6, q: "6. Of all the runners in the race, Tom ran ___ and finished ___ of all.", opts: ["A. the fastest; the first", "B. faster; first", "C. fastest; first", "D. more fast; the first"], ans: 2, note: "正確為 C。副詞最高級 fastest 與序數詞 first 作副詞修飾動詞時，可省略 the。" },
+        { id: 7, q: "7. The doctor advised the patient ___ more exercise every day.", opts: ["A. take", "B. taking", "C. to take", "D. took"], ans: 2, note: "正確為 C。固定句型：advise sb. to do sth.（建議某人做某事）。" },
+        { id: 8, q: "8. The tickets ___ online before the concert, so we couldn't get any now.", opts: ["A. should have booked", "B. should have been booked", "C. must book", "D. had booked"], ans: 1, note: "正確為 B。門票是被預訂（被動語態），且表示過去本該完成，用 should have been booked。" },
+        { id: 9, q: "9. ___ is located at the end of the street.", opts: ["A. The entrance of the park", "B. The park's entrance", "C. The park entrance", "D. The entrance of park"], ans: 0, note: "正確為 A。無生命名詞的所有格常用 of 結構：The entrance of the park。" },
+        { id: 10, q: "10. My cat is very cute. ___?", opts: ["A. How about you", "B. How are you", "C. What about you", "D. What about yours"], ans: 3, note: "正確為 D。yours = your cat，同類事物比較，問「你的貓呢？」。" },
+        { id: 11, q: "11. The teacher gave the students ___ before their final examination.", opts: ["A. an advice", "B. a piece of advice", "C. many advices", "D. an advice piece"], ans: 1, note: "正確為 B。advice 不可數，表達「一條建議」須用 a piece of advice。" },
+        { id: 12, q: "12. Sam was really sad because his friends laughed ___ him.", opts: ["A. at", "B. on", "C. in", "D. /"], ans: 0, note: "正確為 A。固定片語：laugh at sb.（嘲笑某人）。" },
+        { id: 13, q: "13. Stop talking in class! If I hear you speak one more word, you will be ___ trouble.", opts: ["A. at", "B. on", "C. in", "D. /"], ans: 2, note: "正確為 C。固定介詞片語：be in trouble（陷入麻煩）。" },
+        { id: 14, q: "14. If Flora hadn't gone back for the letter, I'm sure she ___ have missed the bus.", opts: ["A. wouldn't", "B. mustn't", "C. needn't", "D. shouldn't"], ans: 0, note: "正確為 A。與過去事實相反的虛擬語氣，主句用 would/wouldn't have + p.p.。" },
+        { id: 15, q: "15. After failing the driving test twice, Jack decided to take ___ second test.", opts: ["A. a", "B. an", "C. the", "D. /"], ans: 0, note: "正確為 A。a + 序數詞（a second test）表示「又一次、再一次」。" },
+        { id: 16, q: "16. The doorbell rang. It ___ be Lisa. It ___ be Lisa. She is still on holiday in France.", opts: ["A. can; mustn't", "B. must; can't", "C. may; should", "D. can; may not"], ans: 1, note: "正確為 B（或語境推測：前者肯定推測 must，後者否定推測「不可能是」用 can't）。" },
+        { id: 17, q: "17. I think KFC tastes better than Jollibee. Do you ___ me?", opts: ["A. agree with", "B. agrees with", "C. agree to", "D. agrees on"], ans: 0, note: "正確為 A。Do 後接動詞原形，同意某人看法用 agree with sb.。" }
+      ]
+    };
+
+    // ==================== 3. SHORT WRITING DATA (13 PATTERNS + SAMPLE ESSAY) ====================
+    const writingPatterns = [
+      { id: 1, section: "Introduction (背景引入)", pattern: "Nowadays, many students... (+v. phr.)", zh: "現今，許多學生…（+動詞片語）", example: "Nowadays, many secondary school students choose to have part-time jobs during their free time.", keywords: ["nowadays", "many students"] },
+      { id: 2, section: "Introduction (表明立場)", pattern: "I agree / disagree that... (+a sentence)", zh: "我同意／不同意…（+完整句子）", example: "I agree that secondary school students should have part-time jobs because they can gain experience.", keywords: ["i agree", "i disagree"] },
+      { id: 3, section: "Conclusion (重申立場)", pattern: "In conclusion, I believe that... (+a sentence)", zh: "總而言之，我相信…（+完整句子）", example: "In conclusion, I believe that having part-time jobs is beneficial for secondary school students.", keywords: ["in conclusion", "i believe that"] },
+      { id: 4, section: "Conclusion (總結兩大論點)", pattern: "This is because... (+a sentence) ...and... (+a sentence)", zh: "這是因為…並且…", example: "This is because they can gain a better understanding of the working world and develop good financial habits.", keywords: ["this is because", "and"] },
+      { id: 5, section: "Body 1 (提出首個論點)", pattern: "One major advantage of ...(+ n. phr.)... is that... (+a sentence)", zh: "…的一個主要優點是…", example: "One major advantage of having a part-time job is that students can gain practical work experience.", keywords: ["one major advantage of", "is that"] },
+      { id: 6, section: "Body 1 (解釋論點)", pattern: "This is because... (+a sentence)", zh: "這是因為…（詳細解釋原因）", example: "This is because they can learn about the working environment and deal with responsibilities.", keywords: ["this is because"] },
+      { id: 7, section: "Body 1 (舉出例子)", pattern: "For instance, ... (+a sentence)", zh: "例如，…（提供具體事例）", example: "For instance, students who work as shop assistants can learn how to serve customers.", keywords: ["for instance"] },
+      { id: 8, section: "Body 1 (扣回主題)", pattern: "Such experience can help them ... (+v. phr.)", zh: "這樣的經驗可以幫助他們…", example: "Such experience can help them prepare for their future careers.", keywords: ["such experience can help them"] },
+      { id: 9, section: "Body 2 (提出反方觀點)", pattern: "On the other hand, some people argue that... (+a sentence)", zh: "另一方面，有些人認為…", example: "On the other hand, some people argue that part-time jobs may affect students' studies.", keywords: ["on the other hand", "some people argue that"] },
+      { id: 10, section: "Body 2 (解釋反方原因)", pattern: "This may be because... (+a sentence)", zh: "這可能是因為…", example: "This may be because working after school leaves students with less time for revision.", keywords: ["this may be because"] },
+      { id: 11, section: "Body 2 (反駁反方觀點)", pattern: "However, I disagree with this view because... (+a sentence)", zh: "然而，我不同意這個觀點，因為…", example: "However, I disagree with this view because students can learn to manage their time wisely.", keywords: ["however", "i disagree with this view because"] },
+      { id: 12, section: "Body 2 (反駁舉例)", pattern: "For instance, ... (+a sentence)", zh: "例如，…（支持你的反駁）", example: "For instance, students who work only on weekends can still keep up with their studies.", keywords: ["for instance"] },
+      { id: 13, section: "Body 2 (段落總結)", pattern: "Therefore, ... (+a sentence)", zh: "因此，…（重申己方立場）", example: "Therefore, with proper planning, students can balance work and school successfully.", keywords: ["therefore"] }
+    ];
+
+    const sampleEssayParagraphs = [
+      {
+        title: "Paragraph 1: Introduction (引言段 • 目標 45~50 詞)",
+        en: "Nowadays, many secondary school students choose to have part-time jobs during their free time. Some people believe that working can benefit students, while others think it may affect their studies. In my opinion, secondary school students should have part-time jobs because they can gain valuable work experience and learn how to manage money wisely.",
+        zh: "現今，許多中學生選擇在空餘時間做兼職。有些人認為工作能令學生受益，而另一些人則認為這可能會影響他們的學業。在我看來，中學生應該做兼職，因為他們可以獲得寶貴的工作經驗並學會明智地管理金錢。"
+      },
+      {
+        title: "Paragraph 2: Body Paragraph 1 (支持論點段 • 目標 60~70 詞)",
+        en: "Firstly, part-time jobs allow students to gain practical work experience. They can learn about the working environment and understand how to deal with different responsibilities at work. For example, students who work as shop assistants can learn how to serve customers and handle problems. Such experience can help them prepare for their future careers.",
+        zh: "首先，兼職工作讓學生獲得實際的工作經驗。他們可以了解工作環境，並明白如何在工作中處理不同的責任。例如，擔任店員的學生可以學習如何服務顧客和處理問題。這樣的經驗可以幫助他們為未來的職業生涯做好準備。"
+      },
+      {
+        title: "Paragraph 3: Body Paragraph 2 (駁論與第二論點段 • 目標 60~70 詞)",
+        en: "On the other hand, some people argue that part-time jobs may affect students' studies. Their main concern is that working after school leaves students with less time and energy for homework and revision. However, I disagree with this view because students can learn to manage their time wisely. For instance, students who work only on weekends can still keep up with their studies. Therefore, with proper planning, students can balance work and school successfully.",
+        zh: "另一方面，有些人認為兼職工作可能會影響學生的學業。他們的主要擔憂是放學後工作會使學生減少做功課和溫習的時間與精力。然而，我不同意這個觀點，因為學生可以學會明智地管理時間。例如，只在週末工作的學生仍然可以跟上學業進度。因此，只要有妥善的計劃，學生就能成功兼顧工作與學業。"
+      },
+      {
+        title: "Paragraph 4: Conclusion (總結段 • 目標 25~30 詞)",
+        en: "In conclusion, I believe that having part-time jobs is beneficial for secondary school students. This is because they can gain a better understanding of the working world and develop good financial habits.",
+        zh: "總而言之，我相信做兼職對中學生是有益的。這是因為他們可以更深入地了解職場世界，並培養良好的理財習慣。"
+      }
+    ];
+
+    // ==================== 4. GLOBAL STATE & PERSISTENCE ====================
+    let currentMainZone = 'study'; // 'study', 'test', 'mistakes'
+    let currentModule = 'u4'; // 'u4', 'grammar', 'writing'
+    let hideEn = false;
+    let hideZh = false;
+    let isFlashcardMode = false;
+    let fcDeck = [...vocabList];
+    let fcIdx = 0;
+
+    let currentPartAMode = 'worksheet';
+    let activePartAItems = [];
+    let partBMode = 'cloze';
+
+    // Mistake Storage
+    let mistakeVocabIds = JSON.parse(localStorage.getItem('f5_mo_mistake_vocab') || '[]');
+    let mistakeGrammarItems = JSON.parse(localStorage.getItem('f5_mo_mistake_grammar') || '[]');
+
+    function saveMistakes() {
+      localStorage.setItem('f5_mo_mistake_vocab', JSON.stringify(mistakeVocabIds));
+      localStorage.setItem('f5_mo_mistake_grammar', JSON.stringify(mistakeGrammarItems));
+      updateMistakeCounters();
+    }
+
+    function updateMistakeCounters() {
+      const total = mistakeVocabIds.length + mistakeGrammarItems.length;
+      document.getElementById('desk-mistake-count').textContent = total;
+      document.getElementById('mob-mistake-badge').textContent = total;
+    }
+
+    // ==================== 5. CROSS-PLATFORM SPEECH SYNTHESIS ====================
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) {
+        showToast("此設備瀏覽器暫不支援語音朗讀");
+        return;
+      }
+      try {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        const voices = window.speechSynthesis.getVoices();
+        const preferred = voices.find(v => v.lang === 'en-US' && (v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Natural')))
+                       || voices.find(v => v.lang.startsWith('en'));
+        if (preferred) utter.voice = preferred;
+        utter.lang = 'en-US';
+        utter.rate = 0.92;
+        window.speechSynthesis.speak(utter);
+      } catch (e) {
+        showToast("語音啟動中，請再按一次喇叭圖示");
+      }
+    }
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.remove('opacity-0');
+      setTimeout(() => t.classList.add('opacity-0'), 2200);
+    }
+
+    // ==================== 6. NAVIGATION CONTROLLERS ====================
+    function switchMainZone(zone) {
+      currentMainZone = zone;
+      ['study', 'test', 'mistakes'].forEach(z => {
+        document.getElementById(`zone-${z}`).classList.toggle('hidden', z !== zone);
+        const dBtn = document.getElementById(`desk-btn-${z}`);
+        if (dBtn) {
+          dBtn.className = z === zone
+            ? "px-5 py-2 rounded-lg text-sm font-bold transition bg-white text-blue-900 shadow-sm flex items-center gap-1.5"
+            : "px-5 py-2 rounded-lg text-sm font-bold transition text-blue-100 hover:text-white flex items-center gap-1.5";
+        }
+        const mBtn = document.getElementById(`mob-btn-${z}`);
+        if (mBtn) {
+          mBtn.className = z === zone
+            ? "relative flex flex-col items-center justify-center text-blue-700 font-bold text-xs"
+            : "relative flex flex-col items-center justify-center text-slate-500 font-medium text-xs";
+        }
+      });
+      if (zone === 'mistakes') renderMistakesPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchModule(mod) {
+      currentModule = mod;
+      ['u4', 'grammar', 'writing'].forEach(m => {
+        const btn = document.getElementById(`mod-btn-${m}`);
+        btn.className = m === mod
+          ? "shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-amber-400 text-slate-900 shadow-sm"
+          : "shrink-0 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition bg-blue-800/70 text-blue-100 hover:bg-blue-700";
+        document.getElementById(`study-mod-${m}`).classList.toggle('hidden', m !== mod);
+        document.getElementById(`test-mod-${m}`).classList.toggle('hidden', m !== mod);
+      });
+      if (currentMainZone === 'mistakes') switchMainZone('study');
+    }
+
+    // ==================== 7. UNIT 4 STUDY RENDERERS ====================
+    function switchU4StudyTab(tab) {
+      ['vocab', 'qa', 'sentences', 'translation'].forEach(t => {
+        document.getElementById(`u4-scontent-${t}`).classList.toggle('hidden', t !== tab);
+        document.getElementById(`u4-stab-${t}`).className = t === tab
+          ? "shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-700 text-white"
+          : "shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100";
+      });
+    }
+
+    function renderVocabList() {
+      const q = document.getElementById('vocab-search').value.trim().toLowerCase();
+      const pos = document.getElementById('vocab-pos-filter').value;
+      const grid = document.getElementById('vocab-list-grid');
+
+      const list = vocabList.filter(v => {
+        const matchQ = v.word.toLowerCase().includes(q) || v.zh.includes(q);
+        const matchPos = pos === 'all' || v.pos.includes(pos);
+        return matchQ && matchPos;
+      });
+
+      grid.innerHTML = list.map(v => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 font-bold text-xs flex items-center justify-center shrink-0">${v.id}</span>
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span onclick="this.classList.remove('blur-sm','select-none')" class="text-base sm:text-lg font-bold text-slate-900 cursor-pointer ${hideEn ? 'blur-sm select-none bg-slate-100 px-1 rounded' : ''}">${v.word}</span>
+                <span class="px-2 py-0.5 bg-blue-50 text-blue-700 rounded text-xs font-semibold">${v.pos}</span>
+              </div>
+              <div onclick="this.classList.remove('blur-sm','select-none')" class="text-sm text-slate-600 mt-0.5 cursor-pointer ${hideZh ? 'blur-sm select-none bg-slate-100 px-1 rounded' : ''}">${v.zh}</div>
+            </div>
+          </div>
+          <button onclick="speakText('${v.word.replace(/'/g, "\\'")}')" class="w-11 h-11 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 text-base" title="發音">🔊</button>
+        </div>
+      `).join('');
+    }
+
+    function toggleHideEn() {
+      hideEn = !hideEn;
+      document.getElementById('btn-hide-en').className = hideEn
+        ? "px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-700 text-white"
+        : "px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700";
+      document.getElementById('btn-hide-en').textContent = hideEn ? "🙈 已隱藏英文" : "👁️ 隱藏英文";
+      renderVocabList();
+    }
+
+    function toggleHideZh() {
+      hideZh = !hideZh;
+      document.getElementById('btn-hide-zh').className = hideZh
+        ? "px-3.5 py-2 rounded-xl text-xs font-bold bg-blue-700 text-white"
+        : "px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-300 bg-white text-slate-700";
+      document.getElementById('btn-hide-zh').textContent = hideZh ? "🙈 已隱藏中文" : "👁️ 隱藏中文";
+      renderVocabList();
+    }
+
+    function toggleFlashcardMode() {
+      isFlashcardMode = !isFlashcardMode;
+      document.getElementById('flashcard-box').classList.toggle('hidden', !isFlashcardMode);
+      document.getElementById('vocab-list-grid').classList.toggle('hidden', isFlashcardMode);
+      document.getElementById('btn-fc-mode').textContent = isFlashcardMode ? "📋 返回生字列表" : "🃏 單字卡翻轉模式";
+      if (isFlashcardMode) updateFlashcard();
+    }
+
+    function updateFlashcard() {
+      const item = fcDeck[fcIdx];
+      document.getElementById('fc-inner').classList.remove('rotate-y-180');
+      document.getElementById('fc-counter').textContent = `第 ${fcIdx + 1} / ${fcDeck.length} 張`;
+      document.getElementById('fc-id').textContent = `#${item.id}`;
+      document.getElementById('fc-en').textContent = item.word;
+      document.getElementById('fc-pos').textContent = item.pos;
+      document.getElementById('fc-zh').textContent = item.zh;
+    }
+
+    function flipFlashcard() { document.getElementById('fc-inner').classList.toggle('rotate-y-180'); }
+    function nextFlashcard() { fcIdx = (fcIdx + 1) % fcDeck.length; updateFlashcard(); }
+    function prevFlashcard() { fcIdx = (fcIdx - 1 + fcDeck.length) % fcDeck.length; updateFlashcard(); }
+    function shuffleFlashcards() { fcDeck = [...vocabList].sort(() => Math.random() - 0.5); fcIdx = 0; updateFlashcard(); showToast("已隨機洗牌"); }
+    function resetFlashcards() { fcDeck = [...vocabList]; fcIdx = 0; updateFlashcard(); showToast("已恢復順序"); }
+    function speakCurrentCard() { speakText(fcDeck[fcIdx].word); }
+
+    function renderU4StudyExtras() {
+      // Part B Q&A
+      document.getElementById('u4-scontent-qa').innerHTML = qaList.map(item => `
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs font-bold">Q${item.id}</span>
+              <h3 class="text-base font-bold text-slate-900 mt-1">${item.q}</h3>
+              <p class="text-xs text-slate-500 mt-0.5">${item.qZh}</p>
+            </div>
+            <button onclick="speakText('${item.q.replace(/'/g, "\\'")}')" class="w-11 h-11 rounded-xl bg-slate-100 flex items-center justify-center shrink-0">🔊</button>
+          </div>
+          <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start justify-between gap-2">
+            <div>
+              <p class="text-sm sm:text-base font-bold text-emerald-950">${item.a}</p>
+              <p class="text-xs text-emerald-800 mt-1">${item.aZh}</p>
+            </div>
+            <button onclick="speakText('${item.a.replace(/'/g, "\\'")}')" class="px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold shrink-0">🔊 聽答案</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Part C Sentences (14 words)
+      document.getElementById('u4-scontent-sentences').innerHTML = sentencePrompts.map(item => `
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-amber-600">第 ${item.id} 題 • 精準 14 詞</span>
+            <span class="text-xs text-slate-500">${item.pos}</span>
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">${item.prompt}</h3>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex items-start justify-between gap-2">
+            <div>
+              <p class="text-sm sm:text-base font-bold text-blue-900">${item.example}</p>
+              <p class="text-xs text-slate-600 mt-1">${item.exampleZh}</p>
+            </div>
+            <button onclick="speakText('${item.example.replace(/'/g, "\\'")}')" class="w-11 h-11 bg-blue-100 text-blue-800 rounded-xl flex items-center justify-center shrink-0">🔊</button>
+          </div>
+        </div>
+      `).join('');
+
+      // Part D Translations
+      document.getElementById('u4-scontent-translation').innerHTML = translationItems.map(item => `
+        <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <span class="px-2 py-0.5 rounded text-xs font-bold ${item.dir === 'en2zh' ? 'bg-indigo-100 text-indigo-800' : 'bg-rose-100 text-rose-800'}">
+                ${item.id}. ${item.dir === 'en2zh' ? '英譯中' : '中譯英'}
+              </span>
+              <p class="text-base font-bold text-slate-900 mt-1">${item.source}</p>
+            </div>
+            ${item.dir === 'en2zh' ? `<button onclick="speakText('${item.source.replace(/'/g, "\\'")}')" class="w-11 h-11 bg-slate-100 rounded-xl flex items-center justify-center shrink-0">🔊</button>` : ''}
+          </div>
+          <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start justify-between gap-2">
+            <div>
+              <p class="text-sm sm:text-base font-bold text-emerald-950">${item.target}</p>
+              ${item.alt ? `<p class="text-xs text-emerald-700 mt-1">亦可寫作：${item.alt}</p>` : ''}
+            </div>
+            ${item.dir === 'zh2en' ? `<button onclick="speakText('${item.target.replace(/'/g, "\\'")}')" class="px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold shrink-0">🔊</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ==================== 8. GRAMMAR STUDY & TEST RENDERERS ====================
+    function switchGrammarStudyTab(sec) {
+      ['A', 'B', 'C', 'D', 'E', 'F'].forEach(s => {
+        document.getElementById(`g-stab-${s}`).className = s === sec
+          ? "shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-700 text-white"
+          : "shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100";
+      });
+      const container = document.getElementById('grammar-study-container');
+
+      if (sec === 'A' || sec === 'B') {
+        container.innerHTML = grammarData[sec].map(item => {
+          let i = 0;
+          const filled = item.text.replace(/___/g, () => `<span class="px-2 py-0.5 mx-0.5 bg-emerald-100 text-emerald-900 font-extrabold rounded border border-emerald-300">${item.blanks[i++]}</span>`);
+          return `
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+              <p class="text-base font-medium text-slate-900 leading-relaxed">${filled}</p>
+              <p class="text-xs text-indigo-700 bg-indigo-50 p-2.5 rounded-xl">💡 考點解析：${item.note}</p>
+            </div>
+          `;
+        }).join('');
+      } else if (sec === 'C') {
+        container.innerHTML = grammarData.C.map(item => {
+          const formatted = item.text.replace(/\[([^\]]+)\]/, `<span class="underline decoration-rose-500 decoration-2 font-bold text-rose-700">$1</span>`);
+          return `
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+              <p class="text-base text-slate-900">${formatted}</p>
+              <div class="flex items-center gap-2 text-sm">
+                <span class="font-bold text-slate-600">標準答案：</span>
+                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-900 font-extrabold rounded">${item.answer}</span>
+              </div>
+              <p class="text-xs text-indigo-700 bg-indigo-50 p-2.5 rounded-xl">💡 解析：${item.note}</p>
+            </div>
+          `;
+        }).join('');
+      } else if (sec === 'D' || sec === 'E') {
+        const d = grammarData[sec];
+        let idx = 0;
+        const passageHtml = d.passage.map(seg => seg.replace(/___/, () => `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-900 font-extrabold rounded border border-emerald-300">${d.answers[idx++]}</span>`)).join('');
+        container.innerHTML = `
+          <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="font-bold text-slate-900">${d.title}</h3>
+            <p class="text-base leading-loose text-slate-800 bg-slate-50 p-4 rounded-xl border border-slate-200">${passageHtml}</p>
+            <div class="space-y-1.5">
+              <div class="text-xs font-bold text-indigo-800">逐空考點解析：</div>
+              ${d.notes.map(n => `<div class="text-xs text-slate-600 bg-indigo-50/70 px-3 py-1.5 rounded-lg">${n}</div>`).join('')}
+            </div>
+          </div>
+        `;
+      } else if (sec === 'F') {
+        container.innerHTML = grammarData.F.map(item => `
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+            <p class="text-base font-bold text-slate-900">${item.q}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${item.opts.map((o, i) => `
+                <div class="px-3 py-2 rounded-xl text-sm border ${i === item.ans ? 'bg-emerald-50 border-emerald-400 font-bold text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-600'}">
+                  ${o} ${i === item.ans ? '✅' : ''}
+                </div>
+              `).join('')}
+            </div>
+            <p class="text-xs text-indigo-700 bg-indigo-50 p-2.5 rounded-xl">💡 ${item.note}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    function switchGrammarTestTab(sec) {
+      ['A', 'B', 'C', 'D', 'E', 'F'].forEach(s => {
+        document.getElementById(`g-ttab-${s}`).className = s === sec
+          ? "shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-700 text-white"
+          : "shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100";
+      });
+      const container = document.getElementById('grammar-test-container');
+
+      if (sec === 'A' || sec === 'B') {
+        container.innerHTML = grammarData[sec].map((item, qIdx) => {
+          let bIdx = 0;
+          const html = item.text.replace(/___/g, () => {
+            const curB = bIdx++;
+            return `<select id="gt-${sec}-${qIdx}-${curB}" class="mx-1 my-1 px-2.5 py-1.5 bg-indigo-50 border border-indigo-300 rounded-lg font-bold text-indigo-900">
+              <option value="">-- 選擇 --</option>
+              ${item.options.map(op => `<option value="${op}">${op}</option>`).join('')}
+            </select>`;
+          });
+          return `
+            <div id="gt-card-${sec}-${qIdx}" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+              <div class="text-base leading-relaxed text-slate-900">${html}</div>
+              <div id="gt-fb-${sec}-${qIdx}" class="hidden text-xs font-bold p-2.5 rounded-xl"></div>
+            </div>
+          `;
+        }).join('') + `
+          <button onclick="gradeGrammarSelect('${sec}')" class="w-full sm:w-auto px-6 py-3.5 bg-indigo-700 text-white font-bold rounded-2xl shadow">
+            ✅ 批改 Section ${sec}
+          </button>
+        `;
+      } else if (sec === 'C') {
+        container.innerHTML = `
+          <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-2xl text-xs text-amber-900">
+            提示：如底線部分完全正確，請直接點擊「填入 ✓」按鈕；如有錯誤，請輸入正確詞語。
+          </div>
+        ` + grammarData.C.map((item, idx) => {
+          const formatted = item.text.replace(/\[([^\]]+)\]/, `<span class="underline decoration-rose-500 decoration-2 font-bold text-rose-700">$1</span>`);
+          return `
+            <div id="gt-card-C-${idx}" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+              <p class="text-base text-slate-900">${formatted}</p>
+              <div class="flex gap-2">
+                <input type="text" id="gt-C-inp-${idx}" placeholder="輸入正確答案或 ✓" class="flex-1 px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-bold" />
+                <button onclick="document.getElementById('gt-C-inp-${idx}').value='✓'" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 rounded-xl text-xs font-bold shrink-0">填入 ✓</button>
+              </div>
+              <div id="gt-fb-C-${idx}" class="hidden text-xs font-bold p-2.5 rounded-xl"></div>
+            </div>
+          `;
+        }).join('') + `
+          <button onclick="gradeGrammarC()" class="w-full sm:w-auto px-6 py-3.5 bg-indigo-700 text-white font-bold rounded-2xl shadow">
+            ✅ 批改 Section C
+          </button>
+        `;
+      } else if (sec === 'D' || sec === 'E') {
+        const d = grammarData[sec];
+        let idx = 0;
+        const html = d.passage.map(seg => seg.replace(/___/, () => {
+          const cur = idx++;
+          return `<input type="text" id="gt-${sec}-inp-${cur}" placeholder="(${cur + 1})" class="mx-1 my-1 px-2.5 py-1 bg-indigo-50 border-b-2 border-indigo-400 rounded font-bold text-indigo-900 w-40" />`;
+        })).join('');
+        container.innerHTML = `
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <h3 class="font-bold text-slate-900">${d.title}</h3>
+            <div class="text-base leading-loose text-slate-800">${html}</div>
+            <div id="gt-fb-${sec}" class="hidden space-y-1.5 p-3.5 rounded-xl bg-slate-50 border border-slate-200"></div>
+            <button onclick="gradeGrammarPassage('${sec}')" class="w-full sm:w-auto px-6 py-3.5 bg-indigo-700 text-white font-bold rounded-2xl shadow">
+              ✅ 批改 Section ${sec}
+            </button>
+          </div>
+        `;
+      } else if (sec === 'F') {
+        container.innerHTML = grammarData.F.map((item, qIdx) => `
+          <div id="gt-card-F-${qIdx}" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+            <p class="text-base font-bold text-slate-900">${item.q}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              ${item.opts.map((o, oIdx) => `
+                <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-slate-50 cursor-pointer hover:bg-indigo-50 min-h-[44px]">
+                  <input type="radio" name="gt-F-${qIdx}" value="${oIdx}" class="w-4 h-4 accent-indigo-600" />
+                  <span class="text-sm font-medium text-slate-800">${o}</span>
+                </label>
+              `).join('')}
+            </div>
+            <div id="gt-fb-F-${qIdx}" class="hidden text-xs font-bold p-2.5 rounded-xl"></div>
+          </div>
+        `).join('') + `
+          <button onclick="gradeGrammarF()" class="w-full sm:w-auto px-6 py-3.5 bg-indigo-700 text-white font-bold rounded-2xl shadow">
+            ✅ 批改 Section F (17題)
+          </button>
+        `;
+      }
+    }
+
+    function recordGrammarMistake(key, title, correctAns, note) {
+      if (!mistakeGrammarItems.some(m => m.key === key)) {
+        mistakeGrammarItems.push({ key, title, correctAns, note });
+        saveMistakes();
+      }
+    }
+
+    function gradeGrammarSelect(sec) {
+      let score = 0;
+      grammarData[sec].forEach((item, qIdx) => {
+        let allOk = true;
+        item.blanks.forEach((ans, bIdx) => {
+          const val = document.getElementById(`gt-${sec}-${qIdx}-${bIdx}`).value;
+          const valid = item.altBlanks && item.altBlanks[bIdx] ? item.altBlanks[bIdx] : [ans];
+          if (!valid.includes(val)) allOk = false;
+        });
+        const fb = document.getElementById(`gt-fb-${sec}-${qIdx}`);
+        fb.classList.remove('hidden');
+        if (allOk) {
+          score++;
+          fb.className = "text-xs font-bold p-2.5 rounded-xl bg-emerald-50 text-emerald-800";
+          fb.textContent = `✅ 正確！${item.note}`;
+        } else {
+          fb.className = "text-xs font-bold p-2.5 rounded-xl bg-rose-50 text-rose-800";
+          fb.textContent = `❌ 正解為：${item.blanks.join(' / ')}。${item.note}`;
+          recordGrammarMistake(item.id, item.text, item.blanks.join(' / '), item.note);
+        }
+      });
+      showToast(`Section ${sec} 得分：${score} / ${grammarData[sec].length}`);
+    }
+
+    function gradeGrammarC() {
+      let score = 0;
+      grammarData.C.forEach((item, idx) => {
+        const val = document.getElementById(`gt-C-inp-${idx}`).value.trim().toLowerCase();
+        const ans = item.answer.toLowerCase();
+        const ok = val === ans || (ans === 'must not use' && val === "mustn't use");
+        const fb = document.getElementById(`gt-fb-C-${idx}`);
+        fb.classList.remove('hidden');
+        if (ok) {
+          score++;
+          fb.className = "text-xs font-bold p-2.5 rounded-xl bg-emerald-50 text-emerald-800";
+          fb.textContent = `✅ 正確！${item.note}`;
+        } else {
+          fb.className = "text-xs font-bold p-2.5 rounded-xl bg-rose-50 text-rose-800";
+          fb.textContent = `❌ 正解：${item.answer}。${item.note}`;
+          recordGrammarMistake(item.id, item.text, item.answer, item.note);
+        }
+      });
+      showToast(`Section C 得分：${score} / 8`);
+    }
+
+    function gradeGrammarPassage(sec) {
+      const d = grammarData[sec];
+      let score = 0;
+      const results = d.answers.map((ans, idx) => {
+        const inp = document.getElementById(`gt-${sec}-inp-${idx}`);
+        const ok = inp.value.trim().toLowerCase().replace(/\s+/g, ' ') === ans.toLowerCase();
+        if (ok) {
+          score++;
+          inp.className = "mx-1 my-1 px-2.5 py-1 bg-emerald-50 border-b-2 border-emerald-500 rounded font-bold text-emerald-900 w-40";
+          return `<div class="text-xs text-emerald-800">✅ (${idx + 1}) 正確：${ans}</div>`;
+        } else {
+          inp.className = "mx-1 my-1 px-2.5 py-1 bg-rose-50 border-b-2 border-rose-500 rounded font-bold text-rose-900 w-40";
+          recordGrammarMistake(`${sec}${idx + 1}`, `Section ${sec} 第(${idx + 1})空`, ans, d.notes[idx]);
+          return `<div class="text-xs text-rose-800">❌ (${idx + 1}) 正解為：<strong>${ans}</strong> — ${d.notes[idx]}</div>`;
+        }
+      });
+      const fb = document.getElementById(`gt-fb-${sec}`);
+      fb.classList.remove('hidden');
+      fb.innerHTML = `<div class="font-bold text-sm text-indigo-900 mb-1">得分：${score} / 8</div>` + results.join('');
+    }
+
+    function gradeGrammarF() {
+      let score = 0;
+      grammarData.F.forEach((item, qIdx) => {
+        const checked = document.querySelector(`input[name="gt-F-${qIdx}"]:checked`);
+        const fb = document.getElementById(`gt-fb-F-${qIdx}`);
+        fb.classList.remove('hidden');
+        if (checked && Number(checked.value) === item.ans) {
+          score++;
+          fb.className = "text-xs font-bold p-2.5 rounded-xl bg-emerald-50 text-emerald-800";
+          fb.textContent = `✅ 正確！${item.note}`;
+        } else {
+          fb.className = "text-xs font-bold p-2.5 rounded-xl bg-rose-50 text-rose-800";
+          fb.textContent = `❌ 正確答案是 ${item.opts[item.ans]}。${item.note}`;
+          recordGrammarMistake(`F${item.id}`, item.q, item.opts[item.ans], item.note);
+        }
+      });
+      showToast(`Section F 得分：${score} / 17`);
+    }
+
+    // ==================== 9. SHORT WRITING STUDY & TEST ====================
+    function switchWritingStudyTab(tab) {
+      document.getElementById('w-stab-patterns').className = tab === 'patterns'
+        ? "flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white"
+        : "flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100";
+      document.getElementById('w-stab-essay').className = tab === 'essay'
+        ? "flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white"
+        : "flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100";
+
+      const container = document.getElementById('writing-study-container');
+      if (tab === 'patterns') {
+        container.innerHTML = writingPatterns.map(p => `
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 rounded text-xs font-bold">${p.id}. ${p.section}</span>
+              <button onclick="speakText('${p.example.replace(/'/g, "\\'")}')" class="px-3 py-1 bg-slate-100 rounded-lg text-xs font-bold text-slate-700">🔊 聽例句</button>
+            </div>
+            <div class="text-base sm:text-lg font-extrabold text-blue-900">${p.pattern}</div>
+            <div class="text-xs text-slate-500">${p.zh}</div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-800">
+              <strong>範例：</strong>${p.example}
+            </div>
+          </div>
+        `).join('');
+      } else {
+        container.innerHTML = `
+          <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl">
+            <div class="text-xs font-bold text-blue-700">題目 (Essay Topic)</div>
+            <h3 class="text-base sm:text-lg font-extrabold text-blue-950">Should secondary school students do part-time jobs?</h3>
+          </div>
+        ` + sampleEssayParagraphs.map(para => `
+          <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+            <div class="flex items-center justify-between gap-2">
+              <h4 class="font-bold text-emerald-800 text-sm sm:text-base">${para.title}</h4>
+              <button onclick="speakText('${para.en.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shrink-0">🔊 朗讀整段</button>
+            </div>
+            <p class="text-sm sm:text-base leading-relaxed text-slate-900 bg-slate-50 p-3.5 rounded-xl border border-slate-200">${para.en}</p>
+            <p class="text-xs text-slate-600 leading-relaxed">${para.zh}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    function switchWritingTestTab(tab) {
+      document.getElementById('w-ttab-cloze').className = tab === 'cloze'
+        ? "flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white"
+        : "flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100";
+      document.getElementById('w-ttab-simulator').className = tab === 'simulator'
+        ? "flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold bg-emerald-700 text-white"
+        : "flex-1 py-2 px-4 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100";
+
+      const container = document.getElementById('writing-test-container');
+      if (tab === 'cloze') {
+        container.innerHTML = writingPatterns.map(p => `
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+            <div class="text-xs font-bold text-emerald-700">${p.id}. ${p.section} — ${p.zh}</div>
+            <input type="text" id="wt-pat-inp-${p.id}" placeholder="請默寫英文句型開頭..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold" />
+            <div class="flex gap-2">
+              <button onclick="checkWritingPattern(${p.id})" class="px-4 py-2 bg-emerald-700 text-white text-xs font-bold rounded-xl">核對句型</button>
+            </div>
+            <div id="wt-pat-fb-${p.id}" class="hidden p-3 rounded-xl text-xs font-bold"></div>
+          </div>
+        `).join('');
+      } else {
+        const paras = [
+          { id: 1, name: "Paragraph 1: Introduction (引言段)", min: 45, max: 50, hint: "建議使用：Nowadays, many students... / I agree that..." },
+          { id: 2, name: "Paragraph 2: Body 1 (支持論點段)", min: 60, max: 70, hint: "建議使用：One major advantage of... is that... / This is because... / For instance... / Such experience can help them..." },
+          { id: 3, name: "Paragraph 3: Body 2 (駁論段)", min: 60, max: 70, hint: "建議使用：On the other hand, some people argue that... / This may be because... / However, I disagree with this view because... / For instance... / Therefore..." },
+          { id: 4, name: "Paragraph 4: Conclusion (總結段)", min: 25, max: 30, hint: "建議使用：In conclusion, I believe that... / This is because... and..." }
+        ];
+        container.innerHTML = `
+          <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl">
+            <div class="text-xs font-bold text-blue-700">寫作模擬題目</div>
+            <div class="text-base font-extrabold text-blue-950">Should secondary school students do part-time jobs?</div>
+          </div>
+        ` + paras.map(pa => `
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h4 class="font-bold text-slate-900 text-sm sm:text-base">${pa.name}</h4>
+              <span id="wt-wc-${pa.id}" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">
+                字數：0 詞 (目標 ${pa.min}~${pa.max} 詞)
+              </span>
+            </div>
+            <p class="text-xs text-slate-500">${pa.hint}</p>
+            <textarea id="wt-area-${pa.id}" rows="4" oninput="analyzeWritingPara(${pa.id}, ${pa.min}, ${pa.max})" placeholder="在此輸入英文段落..." class="w-full p-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600"></textarea>
+            <div id="wt-detected-${pa.id}" class="text-xs text-emerald-700 font-semibold"></div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function checkWritingPattern(id) {
+      const p = writingPatterns.find(item => item.id === id);
+      const val = document.getElementById(`wt-pat-inp-${id}`).value.toLowerCase();
+      const fb = document.getElementById(`wt-pat-fb-${id}`);
+      const ok = p.keywords.every(kw => val.includes(kw));
+      fb.classList.remove('hidden');
+      fb.className = ok ? "p-3 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-900" : "p-3 rounded-xl text-xs font-bold bg-amber-50 text-amber-900";
+      fb.innerHTML = `${ok ? '✅ 關鍵結構正確！' : '💡 請核對標準句型：'} <span class="text-blue-900 underline">${p.pattern}</span>`;
+    }
+
+    function analyzeWritingPara(id, min, max) {
+      const text = document.getElementById(`wt-area-${id}`).value.trim();
+      const words = text ? text.replace(/[.!?,;:()"']+/g, ' ').trim().split(/\s+/).filter(Boolean).length : 0;
+      const badge = document.getElementById(`wt-wc-${id}`);
+
+      if (words >= min && words <= max) {
+        badge.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800";
+        badge.textContent = `字數：${words} 詞 ✓ 完美符合 (${min}~${max} 詞)`;
+      } else if (words > max) {
+        badge.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-100 text-rose-800";
+        badge.textContent = `字數：${words} 詞 ⚠️ 超出上限 (${min}~${max} 詞)`;
+      } else {
+        badge.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-800";
+        badge.textContent = `字數：${words} 詞 (目標 ${min}~${max} 詞)`;
+      }
+
+      const lower = text.toLowerCase();
+      const matched = writingPatterns.filter(p => p.keywords.every(kw => lower.includes(kw)));
+      const det = document.getElementById(`wt-detected-${id}`);
+      det.textContent = matched.length > 0
+        ? `✨ 已偵測到使用句型：${matched.map(m => `#${m.id} ${m.pattern.split('...')[0]}`).join('、')}`
+        : "";
+    }
+
+    // ==================== 10. UNIT 4 TEST RENDERERS ====================
+    function switchU4TestTab(tab) {
+      ['partA', 'partB', 'partC', 'partD'].forEach(t => {
+        document.getElementById(`u4-tcontent-${t}`).classList.toggle('hidden', t !== tab);
+        document.getElementById(`u4-ttab-${t}`).className = t === tab
+          ? "shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-rose-600 text-white"
+          : "shrink-0 flex-1 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100";
+      });
+    }
+
+    function initPartATest(mode) {
+      currentPartAMode = mode;
+      document.getElementById('partA-result-box').classList.add('hidden');
+      ['worksheet', 'random20'].forEach(m => {
+        const btn = document.getElementById(`btn-pa-${m}`);
+        if (btn) {
+          btn.className = m === mode
+            ? "px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-600 text-white"
+            : "px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700";
+        }
+      });
+
+      if (mode === 'worksheet') {
+        activePartAItems = examWorksheetOrder.map(e => ({
+          no: e.examNo,
+          zh: e.zh,
+          vocab: vocabList.find(v => v.id === e.vocabId)
+        }));
+      } else if (mode === 'random20') {
+        activePartAItems = [...vocabList].sort(() => Math.random() - 0.5).slice(0, 20).map((v, idx) => ({
+          no: idx + 1,
+          zh: v.zh,
+          vocab: v
+        }));
+      } else if (mode === 'mistakes') {
+        activePartAItems = vocabList.filter(v => mistakeVocabIds.includes(v.id)).map((v, idx) => ({
+          no: idx + 1,
+          zh: v.zh,
+          vocab: v
+        }));
+      }
+
+      document.getElementById('partA-grid').innerHTML = activePartAItems.map((item, idx) => `
+        <div id="pa-card-${idx}" class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-slate-600">${item.no}. ${item.zh}</span>
+            <span class="text-[11px] px-2 py-0.5 bg-slate-100 text-slate-600 rounded font-semibold">${item.vocab.pos}</span>
+          </div>
+          <input type="text" id="pa-inp-${idx}" autocomplete="off" autocapitalize="none" spellcheck="false"
+            placeholder="輸入英文..."
+            onkeydown="if(event.key==='Enter'){ const nxt=document.getElementById('pa-inp-${idx + 1}'); if(nxt) nxt.focus(); }"
+            class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500" />
+          <div id="pa-fb-${idx}" class="hidden mt-2 text-xs font-bold flex items-center justify-between"></div>
+        </div>
+      `).join('');
+    }
+
+    function gradePartA() {
+      let correct = 0;
+      activePartAItems.forEach((item, idx) => {
+        const inp = document.getElementById(`pa-inp-${idx}`);
+        const card = document.getElementById(`pa-card-${idx}`);
+        const fb = document.getElementById(`pa-fb-${idx}`);
+        const user = inp.value.trim().toLowerCase().replace(/\s+/g, ' ');
+        const valid = [item.vocab.word.toLowerCase(), ...(item.vocab.alt || []).map(a => a.toLowerCase())];
+        const ok = valid.includes(user);
+
+        fb.classList.remove('hidden');
+        if (ok) {
+          correct++;
+          card.className = "bg-emerald-50/70 p-3.5 rounded-2xl border-2 border-emerald-400 shadow-sm";
+          fb.innerHTML = `<span class="text-emerald-800">✅ 正確 (${item.vocab.word})</span><button onclick="speakText('${item.vocab.word.replace(/'/g, "\\'")}')" class="px-2 py-1 text-emerald-800">🔊</button>`;
+          mistakeVocabIds = mistakeVocabIds.filter(id => id !== item.vocab.id);
+        } else {
+          card.className = "bg-rose-50/70 p-3.5 rounded-2xl border-2 border-rose-400 shadow-sm";
+          fb.innerHTML = `<span class="text-rose-800">❌ 正解：<u>${item.vocab.word}</u></span><button onclick="speakText('${item.vocab.word.replace(/'/g, "\\'")}')" class="px-2 py-1 text-rose-800">🔊</button>`;
+          if (!mistakeVocabIds.includes(item.vocab.id)) mistakeVocabIds.push(item.vocab.id);
+        }
+      });
+      saveMistakes();
+
+      const total = activePartAItems.length;
+      const pct = Math.round((correct / total) * 100);
+      const box = document.getElementById('partA-result-box');
+      box.classList.remove('hidden');
+      document.getElementById('partA-score-display').textContent = `${correct} / ${total} (${pct}%)`;
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function setPartBMode(mode) {
+      partBMode = mode;
+      document.getElementById('btn-pb-cloze').className = mode === 'cloze' ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-800 shadow-sm" : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600";
+      document.getElementById('btn-pb-full').className = mode === 'full' ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-white text-blue-800 shadow-sm" : "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600";
+      renderPartBTest();
+    }
+
+    function renderPartBTest() {
+      const container = document.getElementById('partB-test-container');
+      container.innerHTML = qaList.map(item => {
+        if (partBMode === 'cloze') {
+          let bIdx = 0;
+          const html = item.cloze.replace(/\[([^\]]+)\]/g, (_, ans) => {
+            return `<input type="text" id="pb-clz-${item.id}-${bIdx++}" data-ans="${ans}" placeholder="填入關鍵字..." class="mx-1 my-1 px-2.5 py-1 bg-blue-50 border-b-2 border-blue-400 rounded font-bold text-blue-900 w-52 sm:w-64" />`;
+          });
+          return `
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+              <div class="font-bold text-slate-900 text-sm sm:text-base">${item.id}. ${item.q}</div>
+              <div class="text-sm text-slate-800 leading-relaxed bg-slate-50 p-3.5 rounded-xl">${html}</div>
+              <div class="flex flex-wrap gap-2">
+                <button onclick="checkPartBCloze(${item.id})" class="px-4 py-2 bg-blue-700 text-white text-xs font-bold rounded-xl">檢查填充</button>
+                <button onclick="document.getElementById('pb-ans-${item.id}').classList.toggle('hidden')" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-bold rounded-xl">顯示標準答案</button>
+              </div>
+              <div id="pb-ans-${item.id}" class="hidden p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs sm:text-sm font-bold text-emerald-950 flex items-center justify-between">
+                <span>${item.a}</span>
+                <button onclick="speakText('${item.a.replace(/'/g, "\\'")}')" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-xs">🔊</button>
+              </div>
+            </div>
+          `;
+        } else {
+          return `
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+              <div class="font-bold text-slate-900 text-sm sm:text-base">${item.id}. ${item.q}</div>
+              <textarea id="pb-full-${item.id}" rows="2" placeholder="輸入完整英文句子..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl"></textarea>
+              <button onclick="checkPartBFull(${item.id})" class="px-4 py-2 bg-blue-700 text-white text-xs font-bold rounded-xl">核對標準答案</button>
+              <div id="pb-full-fb-${item.id}" class="hidden p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1"></div>
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    function checkPartBCloze(id) {
+      document.querySelectorAll(`[id^="pb-clz-${id}-"]`).forEach(inp => {
+        const ok = inp.value.trim().toLowerCase() === inp.dataset.ans.toLowerCase();
+        inp.className = ok
+          ? "mx-1 my-1 px-2.5 py-1 bg-emerald-50 border-b-2 border-emerald-500 rounded font-bold text-emerald-900 w-52 sm:w-64"
+          : "mx-1 my-1 px-2.5 py-1 bg-rose-50 border-b-2 border-rose-500 rounded font-bold text-rose-900 w-52 sm:w-64";
+      });
+    }
+
+    function checkPartBFull(id) {
+      const item = qaList.find(q => q.id === id);
+      const val = document.getElementById(`pb-full-${id}`).value.toLowerCase();
+      const matched = item.keywords.filter(kw => val.includes(kw.toLowerCase()));
+      const fb = document.getElementById(`pb-full-fb-${id}`);
+      fb.classList.remove('hidden');
+      fb.innerHTML = `
+        <div class="text-xs font-bold text-blue-800">命中關鍵點：${matched.length} / ${item.keywords.length} (${item.keywords.join(', ')})</div>
+        <div class="text-sm font-bold text-emerald-950 flex items-center justify-between gap-2">
+          <span>標準答案：${item.a}</span>
+          <button onclick="speakText('${item.a.replace(/'/g, "\\'")}')" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-xs shrink-0">🔊</button>
+        </div>
+      `;
+    }
+
+    function renderPartCTest() {
+      document.getElementById('partC-test-container').innerHTML = sentencePrompts.map(item => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900">${item.id}. ${item.prompt} <span class="text-xs font-normal text-slate-500">(${item.pos})</span></h3>
+            <span id="pc-wc-${item.id}" class="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700">0 / 14 詞</span>
+          </div>
+          <input type="text" id="pc-inp-${item.id}" oninput="updatePartCWordCount(${item.id})" placeholder="輸入 14 個單詞的英文造句..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl" />
+          <button onclick="checkPartC(${item.id})" class="px-4 py-2 bg-amber-500 text-white text-xs font-bold rounded-xl">檢查並看 14 詞範例</button>
+          <div id="pc-fb-${item.id}" class="hidden p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5"></div>
+        </div>
+      `).join('');
+    }
+
+    function updatePartCWordCount(id) {
+      const val = document.getElementById(`pc-inp-${id}`).value.trim();
+      const count = val ? val.replace(/[.!?,;:]+/g, ' ').trim().split(/\s+/).filter(Boolean).length : 0;
+      const el = document.getElementById(`pc-wc-${id}`);
+      el.textContent = `${count} / 14 詞 ${count === 14 ? '✓' : ''}`;
+      el.className = count === 14
+        ? "px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800"
+        : "px-2.5 py-0.5 rounded-lg text-xs font-bold bg-slate-100 text-slate-700";
+    }
+
+    function checkPartC(id) {
+      const item = sentencePrompts.find(s => s.id === id);
+      const val = document.getElementById(`pc-inp-${id}`).value.trim();
+      const ok = item.regex.test(val);
+      const fb = document.getElementById(`pc-fb-${id}`);
+      fb.classList.remove('hidden');
+      fb.innerHTML = `
+        <div class="text-xs font-bold ${ok ? 'text-emerald-700' : 'text-rose-600'}">
+          ${ok ? '✅ 已包含指定字詞／句型！' : `⚠️ 未偵測到「${item.prompt}」`}
+        </div>
+        <div class="text-sm font-bold text-blue-900 flex items-center justify-between gap-2 pt-1">
+          <span>參考範例（14詞）：${item.example}</span>
+          <button onclick="speakText('${item.example.replace(/'/g, "\\'")}')" class="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-lg text-xs shrink-0">🔊</button>
+        </div>
+      `;
+    }
+
+    function renderPartDTest() {
+      document.getElementById('partD-test-container').innerHTML = translationItems.map(item => `
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2.5">
+          <div>
+            <span class="px-2 py-0.5 rounded text-xs font-bold ${item.dir === 'en2zh' ? 'bg-indigo-100 text-indigo-800' : 'bg-rose-100 text-rose-800'}">
+              ${item.id}. ${item.dir === 'en2zh' ? '英譯中' : '中譯英'}
+            </span>
+            <p class="text-base font-bold text-slate-900 mt-1">${item.source}</p>
+          </div>
+          <textarea id="pd-inp-${item.id}" rows="2" placeholder="輸入你的翻譯..." class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl"></textarea>
+          <button onclick="checkPartD(${item.id})" class="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-xl">核對參考答案</button>
+          <div id="pd-fb-${item.id}" class="hidden p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 space-y-1"></div>
+        </div>
+      `).join('');
+    }
+
+    function checkPartD(id) {
+      const item = translationItems.find(t => t.id === id);
+      const val = document.getElementById(`pd-inp-${id}`).value.toLowerCase();
+      const matched = item.keywords.filter(kw => val.includes(kw.toLowerCase()));
+      const fb = document.getElementById(`pd-fb-${id}`);
+      fb.classList.remove('hidden');
+      fb.innerHTML = `
+        <div class="text-xs font-bold text-emerald-800">命中核心詞彙：${matched.length} / ${item.keywords.length}（${item.keywords.join('、')}）</div>
+        <div class="text-sm font-bold text-emerald-950 flex items-center justify-between gap-2">
+          <span>參考答案：${item.target}</span>
+          ${item.dir === 'zh2en' ? `<button onclick="speakText('${item.target.replace(/'/g, "\\'")}')" class="px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-xs shrink-0">🔊</button>` : ''}
+        </div>
+      `;
+    }
+
+    // ==================== 11. MISTAKE NOTEBOOK RENDERER ====================
+    function renderMistakesPage() {
+      const container = document.getElementById('mistakes-list-container');
+      const mistakeVocabs = vocabList.filter(v => mistakeVocabIds.includes(v.id));
+
+      if (mistakeVocabs.length === 0 && mistakeGrammarItems.length === 0) {
+        container.innerHTML = `
+          <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center space-y-2">
+            <div class="text-4xl">🎉</div>
+            <div class="text-base font-bold text-slate-800">目前沒有任何錯題紀錄！</div>
+            <div class="text-xs text-slate-500">前往「測試區」進行默寫或文法練習，答錯的題目會自動保存在這裡。</div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      if (mistakeVocabs.length > 0) {
+        html += `<div class="text-sm font-bold text-rose-700">📌 錯題生字 (${mistakeVocabs.length} 詞)</div>`;
+        html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">` + mistakeVocabs.map(v => `
+          <div class="bg-white p-4 rounded-2xl border-2 border-rose-200 shadow-sm flex items-center justify-between">
+            <div>
+              <div class="font-bold text-lg text-slate-900">${v.word} <span class="text-xs text-blue-700">(${v.pos})</span></div>
+              <div class="text-sm text-slate-600">${v.zh}</div>
+            </div>
+            <button onclick="speakText('${v.word.replace(/'/g, "\\'")}')" class="w-11 h-11 rounded-xl bg-rose-50 text-rose-700 flex items-center justify-center">🔊</button>
+          </div>
+        `).join('') + `</div>`;
+      }
+
+      if (mistakeGrammarItems.length > 0) {
+        html += `<div class="text-sm font-bold text-indigo-700 pt-2">📌 文法錯題 (${mistakeGrammarItems.length} 題)</div>`;
+        html += mistakeGrammarItems.map(m => `
+          <div class="bg-white p-4 rounded-2xl border-2 border-indigo-200 shadow-sm space-y-1.5">
+            <div class="text-sm font-bold text-slate-900">${m.title}</div>
+            <div class="text-xs font-bold text-emerald-800">正解：${m.correctAns}</div>
+            <div class="text-xs text-slate-600">💡 ${m.note}</div>
+          </div>
+        `).join('');
+      }
+
+      container.innerHTML = html;
+    }
+
+    function startMistakeVocabTest() {
+      if (mistakeVocabIds.length === 0) {
+        showToast("目前沒有錯題生字！");
+        return;
+      }
+      switchModule('u4');
+      switchMainZone('test');
+      switchU4TestTab('partA');
+      initPartATest('mistakes');
+      showToast(`已載入 ${mistakeVocabIds.length} 個錯題生字`);
+    }
+
+    function clearAllMistakes() {
+      mistakeVocabIds = [];
+      mistakeGrammarItems = [];
+      saveMistakes();
+      renderMistakesPage();
+      showToast("已清空所有錯題紀錄");
+    }
+
+    // ==================== 12. KEYBOARD & INIT ====================
+    document.addEventListener('keydown', (e) => {
+      if (isFlashcardMode && currentModule === 'u4' && currentMainZone === 'study') {
+        if (e.key === 'ArrowRight') nextFlashcard();
+        if (e.key === 'ArrowLeft') prevFlashcard();
+        if (e.key === ' ') { e.preventDefault(); flipFlashcard(); }
+      }
+    });
+
+    window.onload = function () {
+      renderVocabList();
+      renderU4StudyExtras();
+      switchGrammarStudyTab('A');
+      switchWritingStudyTab('patterns');
+
+      initPartATest('worksheet');
+      renderPartBTest();
+      renderPartCTest();
+      renderPartDTest();
+      switchGrammarTestTab('A');
+      switchWritingTestTab('cloze');
+
+      updateMistakeCounters();
+    };
+  </script>
+</body>
+</html>
